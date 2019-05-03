@@ -42,10 +42,20 @@ exports.show = function(req, res){
 };
 
 exports.create = function(req,res){
-    Patient.create(req.body, function(err, patient){
-        if(err)return res.status(500).send(err);
+    let newUser = {
+        username: req.body.username,
+        password: req.body.password,
+        role: 'patient'
+    }
+    User.create(newUser, function(err, user){
+        if(err) return res.status(500).send(err);
 
-        res.status(201).send(patient);
+        req.body.userId = user._id;
+        Patient.create(req.body, function(err, patient){
+            if(err)return res.status(500).send(err);
+    
+            res.status(201).send(patient);
+        });
     });
 }
 

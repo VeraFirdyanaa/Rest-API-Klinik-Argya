@@ -43,10 +43,20 @@ exports.show = function(req, res){
 };
 
 exports.create = function(req,res){
-    Doctor.create(req.body, function(err, doctor){
-        if(err)return res.status(500).send(err);
+    let newUser = {
+        username: req.body.username,
+        password: req.body.password,
+        role: 'doctor'
+    }
+    User.create(newUser, function(err, user){
+        if(err) return res.status(500).send(err);
 
-        res.status(201).send(doctor);
+        req.body.userId = user._id;
+        Doctor.create(req.body, function(err, doctor){
+            if(err)return res.status(500).send(err);
+    
+            res.status(201).send(doctor);
+        });
     });
 }
 
