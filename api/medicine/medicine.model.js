@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const MedicineSchema = new Schema({
-    IdMedicine : { type: String, required: true, trim: true },
     name : { type: String, required: true, trim: true },
     form : { type: String, required: true, trim: true },
     createdDate : { type: Date, required: true, trim: true, default: new Date() },

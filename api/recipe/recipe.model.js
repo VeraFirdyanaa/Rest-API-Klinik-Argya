@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const QueueSchema = new Schema({
-    idrecipe : { type: String, required: true, trim: true },
     idDoctor : { type: Schema.Types.ObjectId, required: true, ref: 'doctor' },
     createdDate : { type: Date, required: true, trim: true, default: new Date() },
     idPatient : { type: String, required: true, trim: true },

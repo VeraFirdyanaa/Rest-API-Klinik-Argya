@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const DoctorSchema = new Schema({
-    idInpatient : { type: String, required: true, trim: true },
     noReg : { type: String, required: true, trim: true },
     idDoctor : { type: Schema.Types.ObjectId, required: true, ref: 'doctor' },
     idRoom : { type: Schema.Types.ObjectId, required: true, ref: 'room' },

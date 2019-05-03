@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const CheckUpHistorySchema = new Schema({
-    idCheckUpHistory : { type: String, required: true, trim: true },
     createdDate : { type: Date, required: true, trim: true, default: new Date() },
     idPasien : { type: Schema.Types.ObjectId, required: true, ref: 'patient' },
     idDoctor : { type: Schema.Types.ObjectId, required: true, ref: 'doctor' },

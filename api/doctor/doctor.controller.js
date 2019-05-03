@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Q = require('q');
 const Doctor = require('./doctor.model');
+const User = require('../user/user.model');
 
 //membuat function
 exports.index = function(req, res){
