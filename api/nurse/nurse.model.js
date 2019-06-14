@@ -8,7 +8,8 @@ const NurseSchema = new Schema({
     gender : { type: String, enum: ['Pria', 'Wanita'], required: true },
     pob : { type: String, required: true, trim: true },
     dob : { type: String, required: true, trim: true },
-    age : {type: Number, required: true, trim: true }
+    age : {type: Number, required: true, trim: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 
 module.exports = mongoose.model('nurse', NurseSchema);

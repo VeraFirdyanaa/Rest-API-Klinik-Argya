@@ -5,6 +5,7 @@ const MedicineSchema = new Schema({
     name : { type: String, required: true, trim: true },
     form : { type: String, required: true, trim: true },
     createdDate : { type: Date, required: true, trim: true, default: new Date() },
+    expiredDate : { type: Date, required: true, trim: true },
     price : { type: Number, required: true, trim: true }
 });
 

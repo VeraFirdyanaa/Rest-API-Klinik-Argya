@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Q = require('q');
 const Nurse = require('./nurse.model');
+const User = require('../user/user.model');
 
 //membuat function
 exports.index = function(req, res){
@@ -43,7 +44,7 @@ exports.show = function(req, res){
 
 exports.create = function(req,res){
     let newUser = {
-        username: req.body.username,
+        email: req.body.email,
         password: req.body.password,
         role: 'nurse'
     }
@@ -82,10 +83,14 @@ exports.destroy = function(req, res){
         if(err)return res.status(500).send(err);
         if(!nurse)return res.status(404).json({ message:'Nurse Not Found! '});
 
-       nurse.remove(function(err){
-           if(err) return res.status(500).send(err);
+        User.findOneAndRemove({ _id: nurse.userId }, function(err, userDeleted){
+            if(err) return res.status(500).send(err);
+            
+            nurse.remove(function(err){
+                if(err) return res.status(500).send(err);
 
-           res.status(200).json({ massage: 'Job Deleted!' });
-       });
+                res.status(200).json({ massage: 'Job Deleted!' });
+            });
+        });
     });
 }
