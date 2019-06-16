@@ -10,10 +10,16 @@ exports.index = function (req, res) {
         limit = Number(req.query.limit) || 10,
         skip = (page - 1) * limit;
 
+    let query = {
+        name: {
+            $regex: req.query.name || '',
+            $options: 'i'
+        }
+    };
     //proses async
     Q.all([
-            Patient.count(), //total data
-            Patient.find().skip(skip).limit(limit) //jumlah data
+            Patient.count(query), //total data
+            Patient.find(query).sort('name').skip(skip).limit(limit) //jumlah data
         ])
         .spread(function (total, patients) {
             res.status(200).json({

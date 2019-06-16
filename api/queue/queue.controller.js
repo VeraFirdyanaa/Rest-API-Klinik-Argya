@@ -9,10 +9,17 @@ exports.index = function (req, res) {
         limit = Number(req.query.limit) || 10,
         skip = (page - 1) * limit;
 
+    let query = {
+        code: {
+            $regex: req.query.code || '',
+            $options: 'i'
+        }
+    };
+
     //proses async
     Q.all([
-            Queue.count(), //total data
-            Queue.find().sort('timeCome').populate('patient').skip(skip).limit(limit) //jumlah data
+            Queue.count(query), //total data
+            Queue.find(query).sort('timeCome').populate('patient').skip(skip).limit(limit) //jumlah data
         ])
         .spread(function (total, queues) {
             res.status(200).json({

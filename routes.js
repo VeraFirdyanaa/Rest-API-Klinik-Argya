@@ -1,4 +1,4 @@
-module.exports = function(app){
+module.exports = function (app) {
     app.use('/api/doctors', require('./api/doctor'));
     app.use('/api/nurses', require('./api/nurse'));
     app.use('/api/checkuphistorys', require('./api/checkuphistory'));
@@ -9,6 +9,5 @@ module.exports = function(app){
     app.use('/api/payments', require('./api/payment'));
     app.use('/api/queues', require('./api/queue'));
     app.use('/api/recipes', require('./api/recipe'));
-    app.use('/api/rooms', require('./api/room'));
     app.use('/api/users', require('./api/user'));
 }

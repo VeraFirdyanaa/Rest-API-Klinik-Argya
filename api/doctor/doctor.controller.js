@@ -10,10 +10,17 @@ exports.index = function (req, res) {
         limit = Number(req.query.limit) || 10,
         skip = (page - 1) * limit;
 
+    let query = {
+        name: {
+            $regex: req.query.name || '',
+            $options: 'i'
+        }
+    };
+
     //proses async
     Q.all([
-            Doctor.count(), //total data
-            Doctor.find().populate('userId').skip(skip).limit(limit) //jumlah data
+            Doctor.count(query), //total data
+            Doctor.find(query).sort('name').populate('userId').skip(skip).limit(limit) //jumlah data
         ])
         .spread(function (total, doctors) {
             res.status(200).json({
@@ -104,9 +111,11 @@ exports.destroy = function (req, res) {
         if (!doctor) return res.status(404).json({
             message: 'Doctor Not Found! '
         });
-        
-        User.findOneAndRemove({ _id: doctor.userId }, function(err, userDeleted){
-            if(err) return res.status(500).send(err);
+
+        User.findOneAndRemove({
+            _id: doctor.userId
+        }, function (err, userDeleted) {
+            if (err) return res.status(500).send(err);
             doctor.remove(function (err) {
                 if (err) return res.status(500).send(err);
 
