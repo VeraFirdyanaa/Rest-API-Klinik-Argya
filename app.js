@@ -3,16 +3,20 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const PORT = process.env.PORT || 5000;
 const cors = require('cors');
+const path = require('path');
+let MONG_URL = process.env.DB_URL || 'mongodb://localhost/klinikArgya';
 
 const app = express();
 
-mongoose.connect('mongodb://localhost/klinikArgya');
+mongoose.connect(MONG_URL);
 mongoose.connection.on('connected', function () {
     console.log('Database Connected');
 });
 mongoose.connection.on('error', function (err) {
     console.log('Error to Connect Database', err);
 });
+
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use(cors());
 
