@@ -68,6 +68,33 @@ exports.create = function (req, res) {
     });
 }
 
+exports.seed = function(req, res) {
+    // Seed Doctor
+    let newUser = {
+        email: 'joisandresky@gmail.com',
+        password: 'linuxer7',
+        role: 'doctor'
+    };
+    let newDoctor = {
+        name: 'Jois Andresky',
+        address: 'Bekasi',
+        noTelp: '08986709010',
+        gender: 'Pria',
+        specialist: 'Umum',
+        rates: 15000
+    };
+    User.create(newUser, function(err, user){
+        if(err) return res.status(500).send(err);
+
+        newDoctor.userId = user._id;
+        Doctor.create(newDoctor, function(err, doctor){
+            if(err) return res.status(500).send(err);
+
+            res.status(201).json({ message: 'Doctor seeded', doctor: doctor.name });
+        });
+    });
+}
+
 exports.update = function (req, res) {
     //http://localhost:5000/api/users/234567890
 

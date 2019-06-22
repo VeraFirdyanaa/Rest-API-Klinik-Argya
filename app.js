@@ -18,7 +18,7 @@ mongoose.connection.on('error', function (err) {
 
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// app.use(cors());
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({

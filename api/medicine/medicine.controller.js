@@ -18,9 +18,9 @@ exports.index = function (req, res) {
 
     //proses async
     Q.all([
-            Medicine.count(query), //total data
-            Medicine.find(query).sort('name').skip(skip).limit(limit) //jumlah data
-        ])
+        Medicine.count(query), //total data
+        Medicine.find(query).sort('name').skip(skip).limit(limit) //jumlah data
+    ])
         .spread(function (total, medicines) {
             res.status(200).json({
                 total,
@@ -65,6 +65,20 @@ exports.create = function (req, res) {
         if (err) return res.status(500).send(err);
 
         res.status(201).send(medicine);
+    });
+}
+
+exports.addStock = function (req, res) {
+    Medicine.findOne({ _id: req.params.id }).exec(function (err, medicine) {
+        if (err) return res.status(500).send(err);
+        if (!medicine) return res.status(404).json({ message: 'Medicine not found!' });
+
+        medicine.stock += Number(req.body.qty);
+        medicine.save(function (err) {
+            if (err) return res.status(500).send(err);
+
+            return res.status(200).json({ message: 'Stock Updated!' });
+        });
     });
 }
 

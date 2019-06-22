@@ -5,6 +5,7 @@ const Recipe = require('../recipe/recipe.model');
 const Payment = require('../payment/payment.model');
 const Doctor = require('../doctor/doctor.model');
 const Queue = require('../queue/queue.model');
+const Medicine = require('../medicine/medicine.model');
 
 //membuat function
 exports.index = function (req, res) {
@@ -15,9 +16,9 @@ exports.index = function (req, res) {
 
     //proses async
     Q.all([
-            MedicalRecord.count(), //total data
-            MedicalRecord.find().populate('appointment').skip(skip).limit(limit) //jumlah data
-        ])
+        MedicalRecord.count(), //total data
+        MedicalRecord.find().populate('appointment').skip(skip).limit(limit) //jumlah data
+    ])
         .spread(function (total, medicalRecords) {
             res.status(200).json({
                 total,
@@ -53,10 +54,10 @@ exports.show = function (req, res) {
             message: 'MedicalRecord Not Found! '
         });
         Q.all([Payment.findOne({
-                medicalRecord: req.params.id
-            }).exec(), Recipe.findOne({
-                _id: medicalRecord.recipe
-            }).populate('details.medicine').exec()])
+            medicalRecord: req.params.id
+        }).exec(), Recipe.findOne({
+            _id: medicalRecord.recipe
+        }).populate('details.medicine').exec()])
             .spread(function (payment, recipe) {
                 medicalRecord.payment = payment ? payment : {
                     details: [],
@@ -85,14 +86,25 @@ exports.create = function (req, res) {
                 makePayment(recipe.total, medicalRecord, recipe._id, req.body.consultationFee, function (err, payment) {
                     if (err) return res.status(500).send(err);
 
-                    changeAppointment(medicalRecord, function (err, appointment) {
-                        res.status(200).json({
-                            message: 'Medical Record Saved with Recipe!',
-                            medicalRecord: medicalRecord,
-                            recipe: recipe,
-                            payment: payment
-                        });
+                    var promises = [];
+                    req.body.recipe.details.map(function (med) {
+                        promises.push(subtractStock(med));
                     });
+                    Q.all(promises)
+                        .spread(function (resultMedicine) {
+                            console.log('result medicine subtract', resultMedicine);
+                            changeAppointment(medicalRecord, function (err, appointment) {
+                                res.status(200).json({
+                                    message: 'Medical Record Saved with Recipe!',
+                                    medicalRecord: medicalRecord,
+                                    recipe: recipe,
+                                    payment: payment
+                                });
+                            });
+                        })
+                        .catch(function (err) {
+                            if (err) return res.statu(500).send(err);
+                        });
                 });
             });
         });
@@ -110,7 +122,7 @@ exports.create = function (req, res) {
                         payment: payment
                     });
                 });
-            })
+            });
         });
     }
 }
@@ -119,7 +131,6 @@ function makePayment(total, medicalRecord, recipe, consultationFee, cb) {
     Doctor.findOne({
         _id: medicalRecord.doctor
     }).exec(function (err, doctor) {
-        console.log('doctor founded', doctor, consultationFee);
         var fee = 0;
         if (consultationFee == true && !doctor) fee += 15000;
         if (consultationFee == true && doctor) fee += doctor.rates;
@@ -141,17 +152,32 @@ function changeAppointment(medicalRecord, cb) {
     Queue.update({
         _id: medicalRecord.appointment
     }, {
-        $set: {
-            medicalRecord: medicalRecord._id
-        }
-    }, function (err, updated) {
-        if (err) {
-            console.log(err);
-            return cb(err, null);
-        }
+            $set: {
+                medicalRecord: medicalRecord._id
+            }
+        }, function (err, updated) {
+            if (err) {
+                console.log(err);
+                return cb(err, null);
+            }
 
-        cb(null, updated);
-    });
+            cb(null, updated);
+        });
+}
+
+function subtractStock(med) {
+    console.log('med di details', med);
+    return Medicine.findOne({ _id: med.medicine._id }).exec().then(function (medicine) {
+        console.log('medicine ketemu', medicine);
+        medicine.stock -= Number(med.qty);
+        medicine.save(function (err) {
+            if (err) return null;
+            return true;
+        });
+    }).catch(function (err) {
+        console.log(err);
+        return null;
+    })
 }
 
 exports.update = function (req, res) {
