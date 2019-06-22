@@ -18,9 +18,9 @@ exports.index = function (req, res) {
 
     //proses async
     Q.all([
-            User.count(), //total data
-            User.find().skip(skip).limit(limit) //jumlah data
-        ])
+        User.count(), //total data
+        User.find().skip(skip).limit(limit) //jumlah data
+    ])
         .spread(function (total, users) {
             res.status(200).json({
                 total,
@@ -68,27 +68,27 @@ exports.create = function (req, res) {
     });
 }
 
-exports.seed = function(req, res) {
+exports.seed = function (req, res) {
     // Seed Doctor
     let newUser = {
-        email: 'joisandresky@gmail.com',
-        password: 'linuxer7',
+        email: 'doctor@gmail.com',
+        password: 'doctor123',
         role: 'doctor'
     };
     let newDoctor = {
-        name: 'Jois Andresky',
+        name: 'Dummy Doctor',
         address: 'Bekasi',
         noTelp: '08986709010',
         gender: 'Pria',
         specialist: 'Umum',
         rates: 15000
     };
-    User.create(newUser, function(err, user){
-        if(err) return res.status(500).send(err);
+    User.create(newUser, function (err, user) {
+        if (err) return res.status(500).send(err);
 
         newDoctor.userId = user._id;
-        Doctor.create(newDoctor, function(err, doctor){
-            if(err) return res.status(500).send(err);
+        Doctor.create(newDoctor, function (err, doctor) {
+            if (err) return res.status(500).send(err);
 
             res.status(201).json({ message: 'Doctor seeded', doctor: doctor.name });
         });
@@ -141,8 +141,8 @@ exports.destroy = function (req, res) {
 
 exports.login = function (req, res) {
     User.findOne({
-            email: req.body.email
-        })
+        email: req.body.email
+    })
         .then(user => {
             if (user) {
                 // if (bcrypt.compareSync(req.body.password, user.password)) {
