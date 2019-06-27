@@ -50,6 +50,14 @@ const MedicalRecordSchema = new Schema({
     appointment: {
         type: Schema.Types.ObjectId,
         ref: 'queue'
+    },
+    needOpname: {
+        type: Boolean,
+        default: false
+    },
+    opname: {
+        type: Schema.Types.ObjectId,
+        ref: 'opname'
     }
 });
 

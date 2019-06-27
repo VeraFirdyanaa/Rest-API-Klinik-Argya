@@ -6,6 +6,7 @@ const Payment = require('../payment/payment.model');
 const Doctor = require('../doctor/doctor.model');
 const Queue = require('../queue/queue.model');
 const Medicine = require('../medicine/medicine.model');
+const Room = require('../room/room.model');
 
 //membuat function
 exports.index = function (req, res) {
@@ -48,7 +49,7 @@ exports.show = function (req, res) {
     //http://localhost:5000/api/medicalRecords/234567890
     MedicalRecord.findOne({
         _id: req.params.id
-    }).populate('appointment recipe doctor patient').lean().exec(function (err, medicalRecord) {
+    }).populate('appointment recipe doctor patient opname').lean().exec(function (err, medicalRecord) {
         if (err) return res.status(500).send(err);
         if (!medicalRecord) return res.status(404).json({
             message: 'MedicalRecord Not Found! '
@@ -57,14 +58,15 @@ exports.show = function (req, res) {
             medicalRecord: req.params.id
         }).exec(), Recipe.findOne({
             _id: medicalRecord.recipe
-        }).populate('details.medicine').exec()])
-            .spread(function (payment, recipe) {
+        }).populate('details.medicine').exec(), Room.findOne({ _id: medicalRecord.opname.room }).exec()])
+            .spread(function (payment, recipe, room) {
                 medicalRecord.payment = payment ? payment : {
                     details: [],
                     total: 0,
                     createdDate: new Date()
                 };
                 if (recipe) medicalRecord.recipe = recipe;
+                if (room) medicalRecord.room = room;
                 res.status(200).json(medicalRecord);
             })
             .catch(err => {

@@ -10,4 +10,6 @@ module.exports = function (app) {
     app.use('/api/queues', require('./api/queue'));
     app.use('/api/recipes', require('./api/recipe'));
     app.use('/api/users', require('./api/user'));
+    app.use('/api/rooms', require('./api/room'));
+    app.use('/api/opnames', require('./api/opname'));
 }
